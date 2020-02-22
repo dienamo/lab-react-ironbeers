@@ -12,25 +12,31 @@ class NewBeer extends React.Component{
         attenuationlevel:"",
         contribuedby:""
     }
-    createNewBeer=()=>{
-        axios.post(`https://ih-beer-api.herokuapp.com/beers/new`)
-          .then( responseFromApi => {
-              const theBeer = responseFromApi.data;
-              this.setState(theBeer);
-          })
-          .catch(err =>console.log(err))
+    handleChange = (event) => {  
+        const {name, value} = event.target;
+        this.setState({[name]: value});
     }
-    handleChange = (event) => {
-        this.setState({
-          name: event.target.value,
-        })
+    handleFormSubmit = (event) => {
+        event.preventDefault();
+        
+        const {name , description , tagline , firstbrewed , brewertips , attenuationlevel , contribuedby} = this.state;
+        
+        axios.post("https://ih-beer-api.herokuapp.com/beers/new", { name, description,tagline,firstbrewed,brewertips,attenuationlevel,contribuedby })
+          .then(() => {
+              // this.props.getData();
+              
+              // Reset form
+              this.setState({name: "", description: "",tagline:"",firstbrewed:"",brewertips:"",attenuationlevel:"",contribuedby:""});
+          })
+          .catch(error => console.log(error))
       }
+
     render(){
         return(
             <div>
                 <Header />
 
-                <form className="form">
+                <form onSubmit={this.handleFormSubmit} className="form">
                     <label>Name:
                         <input type="text" name="name" value={this.state.name} onChange={e=>this.handleChange(e)}/>
                     </label>
@@ -52,6 +58,7 @@ class NewBeer extends React.Component{
                     <label>Contribued by
                         <input type="text" name="contribuedby" value={this.state.contribuedby} onChange={e=>this.handleChange(e)}/>
                     </label>
+                    <input type="submit" value="Submit" />
                 </form>
             </div>
         )
